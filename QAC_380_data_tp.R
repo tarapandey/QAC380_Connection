@@ -93,11 +93,12 @@ ggplot(freq_table_DOC, aes(x = Category, y = Count)) +
 freq_table_DOC <- as.data.frame(table(ORAS$RiskLevel))
 colnames(freq_table_DOC) <- c("Category", "Count")
 
+freq_table_DOC$Category <- factor(freq_table_DOC$Category, levels = c("Overriden", "Low", "Moderate", "High", "Very High"))
+
 ggplot(freq_table_DOC, aes(x = Category, y = Count)) +
   geom_col(fill = "steelblue", color = "black") + # Customize bar appearance
   labs(title = "Frequency Distribution of Risk Level from ORAS Score", x = "Category", y = "Frequency") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
-
 
 
