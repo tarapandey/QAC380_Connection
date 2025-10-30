@@ -84,6 +84,9 @@ EmploymentData <- EmploymentData %>%
 
 library(dplyr)
 
+
+#Employment Status Current to Discharge
+
 EmploymentData$EmploymentStatusCurrentToDischarge <- recode(EmploymentData$EmploymentStatusCurrentToDischarge,
                                                      "Employed - F/T Competitive  (35 hrs or more)" = "Employed",
                                                      "Employed - P/T Competitive (35 hrs or less)" = "Employed",
