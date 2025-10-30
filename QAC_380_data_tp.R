@@ -69,9 +69,20 @@ colnames(freq_table_DOC) <- c("Category", "Count")
 
 ggplot(freq_table_DOC, aes(x = Category, y = Count)) +
   geom_col(fill = "steelblue", color = "black") + # Customize bar appearance
-  labs(title = "Frequency Distribution of Employment Status At Admission", x = "Category", y = "Frequency") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+  labs(title = "Frequency Distribution of Employment Status At Admission", x = "Employment Status", y = "Frequency") +
+  theme_minimal()
+
+#to check freq table
+freq_table_DOC
+
+#filter out empty rows:
+EmploymentData <- EmploymentData %>%
+  filter(EmploymentData$EmploymentStatusAtAdmission %in% c("Employed", "Unemployed", "NILF"))
+
+
+#Employment Status Current to Discharge
+
+library(dplyr)
 
 
 #Employment Status Current to Discharge
@@ -95,8 +106,12 @@ colnames(freq_table_DOC) <- c("Category", "Count")
 ggplot(freq_table_DOC, aes(x = Category, y = Count)) +
   geom_col(fill = "steelblue", color = "black") + # Customize bar appearance
   labs(title = "Frequency Distribution of Employment Status Current to Discharge", x = "Category", y = "Frequency") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+  theme_minimal()
+
+
+#filter out empty rows:
+EmploymentData <- EmploymentData %>%
+  filter(EmploymentData$EmploymentStatusCurrentToDischarge %in% c("Employed", "Unemployed", "NILF"))
 
 #Age of First Use
 freq_table_AFU <- as.data.frame(table(DrugOfChoice$AgeOfFirstUse))
