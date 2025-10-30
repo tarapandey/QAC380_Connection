@@ -101,4 +101,22 @@ ggplot(freq_table_DOC, aes(x = Category, y = Count)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
+#bivariate dist of distribution of discharge status by ORAS Risk Level
+
+library(ggplot2)
+
+ggplot(Merged, aes(x = DischargeStatus, fill = RiskLevel)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Distribution of Discharge Status by ORAS Risk Level",
+    x = "Discharge Status",
+    y = "Count",
+    fill = "ORAS Risk Level"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5)
+  )
+
 
