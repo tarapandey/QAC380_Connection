@@ -66,3 +66,110 @@ MergedData7 = merge(MergedData6, OffenseData, by = "StudyEpisodeId")
 setwd("~/Downloads")
 DIA = read.csv("2021_Disproportionately_Impacted_Areas_20251024.csv")
 freq(DIA$Disproportionately.Impacted.Area..DIA.)
+
+
+
+#Shital Code 
+library(ggplot2)
+library(tidyverse)
+library(descr)
+library(dplyr)
+library(readr)
+
+setwd("/Volumes/courses/QAC/qac380/Data and Codebooks/Connection/Data")
+
+ClientData = read.csv("ClientData.csv")
+
+ClientAddress = read.csv("ClientAddressData.csv")
+
+EpisodeData = read.csv("EpisodeData.csv")
+
+OffenseData = read.csv("OffenseData.csv")
+
+# Freq distribution for: ClientData: client race
+
+ClientData$Race[ClientData$Race == "Not on file" ] <- NA
+ClientData$Race[ClientData$Race == "Undisclosed" ] <- NA
+
+
+ClientData$RaceGrouped <- recode(ClientData$Race,
+                              "Caucasian or White" = "White",
+                              "African American or Black" = "Black",
+                              "American Indian or Alaskan Native" = "Other",
+                              "Asian" = "Other",
+                              "Multi-Racial" = "Multi",
+                              "Native Hawaiian/Other Pacific Islander" = "Other",
+                              "Other Pacific Islander" = "Other",
+                              "Some other race" = "Other"
+)
+
+freq_table <- as.data.frame(table(ClientData$RaceGrouped))
+colnames(freq_table) <- c("Category", "Count")
+
+
+ggplot(freq_table, aes(x = Category, y = Count)) +
+  geom_col(fill = "steelblue", color = "black") + 
+  labs(title = "Frequency Distribution of Client Race", x = "Category", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+
+# Freq distribution for: ClientData: client ethnicity
+
+ClientData$Ethnicity[ClientData$Ethnicity == "Unknown" ] <- NA
+
+ClientData$EthGrouped <- recode(ClientData$Ethnicity,
+                                "No, Not of Hispanic, Latino, or Spanish Origin." = "Not Hispanic",
+                                "Yes, another Hispanic, Latino, or Spanish origin" = "Hispanic",
+                                "Yes, Puerto Rican" = "Hispanic",
+                                "Yes, Cuban" = "Hispanic",
+                                "Yes, Mexican, Mexican American, Chicano." = "Hispanic",
+                                "Yes, of Hispanic/Latino Origin" = "Hispanic",
+                                "Yes, South or Central American" = "Hispanic")
+
+freq_table <- as.data.frame(table(ClientData$EthGrouped))
+colnames(freq_table) <- c("Category", "Count")
+
+
+ggplot(freq_table, aes(x = Category, y = Count)) +
+  geom_col(fill = "steelblue", color = "black") + 
+  labs(title = "Frequency Distribution of Client Ethnicity", x = "Category", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+# Freq distribution for: EpisodeData: Discharge Status of the client for the program 
+
+EpisodeData$DischargeStatus[EpisodeData$DischargeStatus == "Deceased" ] <- NA
+#EpisodeData$DischargeStatus[EpisodeData$DischargeStatus == "Other" ] <- NA
+EpisodeData$DischargeStatus[EpisodeData$DischargeStatus == "" ] <- NA
+
+
+EpisodeData$DischargeGrouped <- recode(EpisodeData$DischargeStatus,
+                                "Absconded/AWOL" = "Unsuccessful",
+                                "Arrested New" = "Unsuccessful",                                "Arrested New" = "Unsuccessful",
+                                "Completed Program/End of Sentence" = "Successful",
+                                "Completed Program/Parole" = "Successful",
+                                "Completed Program/Treatment" = "Successful",
+                                "Completed Program/Treatment & Referred" = "Successful",
+                                "Escaped" = "Unsuccessful",
+                                "Incarcerated" = "Unsuccessful",
+                                "New Arrest - Sexual Offense" = "Unsuccessful",
+                                "Remanded" = "Unsuccessful",
+                                "Discharged to Higher Level of Care" = "Other",
+                                "Medical" = "Other",
+                                "Moved out of area" = "Other",
+                                "Transferred" = "Other",
+                                
+                                
+                                )
+
+freq_table <- as.data.frame(table(EpisodeData$DischargeGrouped))
+colnames(freq_table) <- c("Category", "Count")
+
+
+ggplot(freq_table, aes(x = Category, y = Count)) +
+  geom_col(fill = "red", color = "black") + 
+  labs(title = "Frequency Distribution of Disharge Status - With 'Other'", x = "Category", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
