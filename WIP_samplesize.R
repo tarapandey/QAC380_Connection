@@ -7,7 +7,7 @@ library(descr)
 library(dplyr)
 library(readr)
 
-setwd("/Users/tarapandey/Clone_QAC_380")
+setwd("/Users/shitaloli/Desktop/TheConnection Client")
 
 #Load all the csv's 
 ClientData = read.csv("ClientData.csv")
@@ -18,17 +18,7 @@ EmploymentData = read.csv("EmploymentData.csv")
 DrugofChoice = read.csv("DrugOfChoiceData.csv")
 ORAS_CST = read.csv("ScoresCSTData.csv")
 ASUSDimensions = read.csv("ASUS_dimension_scores.csv")
-OutsideData = read.csv("2022_Disproportionately_Impacted_Areas copy.csv")
-
-#average data by town
-avg_town <- OutsideData %>%
-  group_by(Town.s.) %>%
-  summarize(
-    median_income = mean(Median.Household.Income, na.rm = TRUE),
-    conviction_rate = mean(Conviction.Rate, na.rm = TRUE),
-    conviction_count = mean(Conviction.Count, na.rm = TRUE))
-
-#avg_town only includes town and median income
+OutsideData = read.csv("2022_Disproportionately_Impacted_Areas.csv")
 
 #rename variables as needed
 
@@ -45,7 +35,7 @@ MergedData3 = merge(MergedData2, ASUSDimensions, by = "StudyClientId")
 MergedData4 = merge(MergedData3, EmploymentData, by = "StudyClientId")
 
 
-FinalMerge = left_join(MergedData4, avg_town, by = c("City" = "Town.s."))
+FinalMerge = left_join(MergedData4, OutsideData, by = c("City" = "Town.s."))
 
 glimpse(FinalMerge)
 
