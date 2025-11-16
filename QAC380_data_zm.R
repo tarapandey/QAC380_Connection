@@ -50,14 +50,20 @@ MergedData5$StudyEpisodeId <- coalesce(MergedData5$StudyEpisodeId.x, MergedData5
 MergedData5$StudyEpisodeId.x <- NULL
 MergedData5$StudyEpisodeId.y <- NULL
 
-MergedData6 = merge(MergedData5, DrugofChoice, by = "StudyEpisodeId")
+MergedData6 = merge(MergedData5, DrugofChoice, by = "StudyEpisodeId")  
 MergedData7 = merge(MergedData6, OffenseData, by = "StudyEpisodeId")
 
-
+#use lifetime drug use or lifetime drug use rather than 6 months 
 
 #observations: addy has 3775 obs, OffenseData#observations: addy has 3775 obs, client data has 3280. merging them gives 3775
 #episode data has 4275 but merging all has 6566 obs. this means that 1484 observations 
 #were lost -- likely, multiple episodes from a same individual. 
+
+#Merging for bivariate graphs:
+
+#AgeOfFirstUse × Successful Discharge
+
+#MergedData6 = merge(MergedData5, DrugofChoice, by = "StudyEpisodeId")
 
 
 
@@ -173,3 +179,18 @@ ggplot(freq_table, aes(x = Category, y = Count)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
+#Age of first use
+
+
+DrugOfChoice <- read.csv("/Volumes/courses/QAC/qac380/Data and Codebooks/Connection/Data/DrugOfChoiceData.csv")
+
+DrugOfChoice$AgeOfFirstUse[DrugOfChoice$AgeOfFirstUse == 0 ] <- NA
+
+freq_table_AFU <- as.data.frame(table(DrugOfChoice$AgeOfFirstUse))
+colnames(freq_table_AFU) <- c("Category", "Count")
+
+ggplot(freq_table_AFU, aes(x = Category, y = Count)) +
+  geom_col(fill = "steelblue", color = "black") + # Customize bar appearance
+  labs(title = "Frequency Distribution of Age of First Use of Substances", x = "Category", y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
