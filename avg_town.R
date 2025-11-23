@@ -102,33 +102,230 @@ FinalMerge <- FinalMerge %>%
 
 glimpse(FinalMerge)
 
+#ORAS
+ORAS <- read.csv("ScoresCSTData.csv")
+ORAS_Risk <- subset(ORAS, select = c(StudyClientId, RiskLevel))
+FinalMerge <- merge(FinalMerge, ORAS_Risk, 
+                   by = c("StudyClientId"),
+                   all = TRUE)
+
+#Employment
+
+#Employment Status Current to Discharge
+
+FinalMerge$EmploymentStatusCurrentToDischarge <- recode(FinalMerge$EmploymentStatusCurrentToDischarge,
+                                                            "Employed - F/T Competitive  (35 hrs or more)" = "Employed",
+                                                            "Employed - P/T Competitive (35 hrs or less)" = "Employed",
+                                                            "NILF Temporarily unable to work due to Medical/Mental Health Issues" = "NILF",
+                                                            "NILF Temporarily unable to work due to lack of identification" = "NILF",
+                                                            "NILF Pending Disability" = "NILF",
+                                                            "NILF SSI/SSDI/SAGA" = "NILF",
+                                                            "Enrolled in School w/Work Study" = "Employed",
+                                                            "(N/A) Temporarily unable to work due to lack of identification" = "NILF",
+                                                            "Employed - F/T Semi-Skilled Position" = "Employed",
+                                                            "Employed - P/T Semi-Skilled Position" = "Employed",
+)
+
+#Employment Status At Admission
+
+FinalMerge$EmploymentStatusAtAdmission <- recode(FinalMerge$EmploymentStatusAtAdmission,
+                                                     "Employed - F/T Competitive  (35 hrs or more)" = "Employed",
+                                                     "Employed - P/T Competitive (35 hrs or less)" = "Employed",
+                                                     "NILF Temporarily unable to work due to Medical/Mental Health Issues" = "NILF",
+                                                     "NILF Temporarily unable to work due to lack of identification" = "NILF",
+                                                     "NILF Pending Disability" = "NILF",
+                                                     "NILF SSI/SSDI/SAGA" = "NILF",
+                                                     "Enrolled in School w/Work Study" = "Employed",
+                                                     "(N/A) Temporarily unable to work due to lack of identification" = "NILF"
+)
+
+
+#LCA
+#AOD_INVOLVEMENT1
+FinalMerge$AODInv1Group <- cut(
+  FinalMerge$AOD_INVOLVEMENT1,
+  breaks = c(0, 3, 6, 11, 40),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$AODInv1Group <- as.factor(FinalMerge$AODInv1Group)
+
+#AOD_INVOLVEMENT2
+FinalMerge$AODInv2Group <- cut(
+  FinalMerge$AOD_INVOLVEMENT2,
+  breaks = c(0, 7, 16, 25, 40),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$AODInv2Group <- as.factor(FinalMerge$AODInv2Group)
+
+#AOD_DISRUPTION1
+FinalMerge$AOD1Group <- cut(
+  FinalMerge$AOD_DISRUPTION1,
+  breaks = c(0, 1, 6, 21, 80),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$AOD1Group <- as.factor(FinalMerge$AOD1Group)
+
+#AOD_DISRUPTION2
+FinalMerge$AOD2Group <- cut(
+  FinalMerge$AOD_DISRUPTION2,
+  breaks = c(0, 21, 41, 57, 80),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$AOD2Group <- as.factor(FinalMerge$AOD2Group)
+
+#AOD_USE_BENEFITS
+FinalMerge$AOD_BENEFITS <- cut(
+  FinalMerge$AOD_USE_BENEFITS,
+  breaks = c(0, 1, 4, 10, 30),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$AOD_BENEFITS <- as.factor(FinalMerge$AOD_BENEFITS)
+
+#SOCIAL_NON_CONFORMING
+FinalMerge$SOC_NONCON <- cut(
+  FinalMerge$SOCIAL_NON_CONFORMING,
+  breaks = c(0, 5, 7, 12, 36),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$SOC_NONCON <- as.factor(FinalMerge$SOC_NONCON)
+
+#LEGAL_NON_CONFORMING
+FinalMerge$LEG_NONCON <- cut(
+  FinalMerge$LEGAL_NON_CONFORMING,
+  breaks = c(0, 5, 7, 12, 36),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$LEG_NONCON <- as.factor(FinalMerge$LEG_NONCON)
+
+#LEGAL_NON_CONFORMING_6MOS
+FinalMerge$LEG_6MOS <- cut(
+  FinalMerge$LEGAL_NON_CONFORMING_6MOS,
+  breaks = c(-1, 0, 2, 5, 33),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$LEG_6MOS <- as.factor(FinalMerge$LEG_6MOS)
+
+#MOOD_ADJUSTMENT
+FinalMerge$MOOD <- cut(
+  FinalMerge$MOOD_ADJUSTMENT,
+  breaks = c(0, 2, 6, 9, 30),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$MOOD <- as.factor(FinalMerge$MOOD)
+
+#DEFENSIVE
+FinalMerge$DEF <- cut(
+  FinalMerge$DEFENSIVE,
+  breaks = c(0, 5, 10, 13, 21),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$DEF <- as.factor(FinalMerge$DEF)
+
+#MOTIVATION_TO_CHANGE
+FinalMerge$MOTIVATION <- cut(
+  FinalMerge$MOTIVATION_TO_CHANGE,
+  breaks = c(0, 5, 10, 15, 21),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$MOTIVATION <- as.factor(FinalMerge$MOTIVATION)
+
+#STRENGTHS
+FinalMerge$STREN <- cut(
+  FinalMerge$STRENGTHS,
+  breaks = c(0, 7, 17, 22, 27),
+  labels = c(1, 2, 3, 4)
+)
+FinalMerge$STREN <- as.factor(FinalMerge$STREN)
+
+names(FinalMerge)[names(FinalMerge) %in% c("EmploymentStatusAtAdmission","EmploymentStatusCurrentToDischarge")] <- c("Employ_Admin","Employ_Discharge")
+
+lca_subset<-subset(FinalMerge, select=c(RaceGrouped, EthGrouped, AOD2Group,AOD1Group,AODInv1Group,
+                                    AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
+                                    STREN,Employ_Admin,Employ_Discharge, RiskLevel,
+                                    ProgramName))
+
+
+lca_subset <- na.omit(lca_subset[, c(
+  "AOD2Group","AOD1Group","AODInv1Group","AODInv2Group",
+  "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
+  "MOOD","DEF","MOTIVATION","STREN",
+  "RaceGrouped","EthGrouped", "Employ_Admin", 
+  "Employ_Discharge", "RiskLevel", "ProgramName"
+)])
+
+
+
+library(plyr)
+
+lca_subset$RaceGrouped<-revalue(lca_subset$RaceGrouped, c("Black"="1", "White"="2", "Other"="3"))
 FinalMerge$RaceGrouped <- as.factor(FinalMerge$RaceGrouped)
-FinalMerge$BiologicalGender <- as.factor(FinalMerge$BiologicalGender)
+
+lca_subset$EthGrouped<-revalue(lca_subset$EthGrouped, c("Hispanic"="1", "Not Hispanic"="2"))
 FinalMerge$EthGrouped <- as.factor(FinalMerge$EthGrouped)
+
+lca_subset$Employ_Admin<-revalue(lca_subset$Employ_Admin, c("Employed"="1", "Unemployed"="2", "NILF"="3"))
+FinalMerge$Employ_Admin <- as.factor(FinalMerge$Employ_Admin)
+
+lca_subset$Employ_Discharge<-revalue(lca_subset$Employ_Discharge, c("Employed"="1", "Unemployed"="2", "NILF"="3"))
+FinalMerge$Employ_Discharge <- as.factor(FinalMerge$Employ_Discharge)
+
+lca_subset$RiskLevel<-revalue(lca_subset$RiskLevel, c("Low"="1", "Moderate"="2", "High"="3", "Very High" = "4"))
+FinalMerge$RiskLevel <- as.factor(FinalMerge$RiskLevel)
+
+lca_subset$ProgramName<-revalue(lca_subset$ProgramName, c("Eddy Center"="1", "The January Center"="2", "REACH (ReEntry Assisted Community Housing)"="3", "SIERRA Center - Work Release" = "4", "Roger Sherman House" = "5"))
+FinalMerge$ProgramName <- as.factor(FinalMerge$ProgramName)
 
 #inclusion of AOD variables
 
-#AOD_DISRUPTION1
-set.seed(1)
-km_AOD1 <- kmeans(FinalMerge$AOD_DISRUPTION1[is.finite(FinalMerge$AOD_DISRUPTION1)], centers = 3)
-
-FinalMerge$Disruption1Group <- NA
-FinalMerge$Disruption1Group[is.finite(FinalMerge$AOD_DISRUPTION1)] <- km_AOD1$cluster
-
-FinalMerge$Disruption1Group <- as.factor(FinalMerge$Disruption1Group)
-
-#AOD_DISRUPTION2
-set.seed(1)
-km_AOD2 <- kmeans(FinalMerge$AOD_DISRUPTION2[is.finite(FinalMerge$AOD_DISRUPTION2)], centers = 3)
-
-FinalMerge$Disruption2Group <- NA
-FinalMerge$Disruption2Group[is.finite(FinalMerge$AOD_DISRUPTION2)] <- km_AOD2$cluster
-
-FinalMerge$Disruption2Group <- as.factor(FinalMerge$Disruption2Group)
-
 library(poLCA)
 
-LCA_vector <- cbind(RaceGrouped, BiologicalGender, EthGrouped, Disruption1Group, Disruption2Group) ~ 1
-poLCA(LCA_vector, FinalMerge, nclass = 2)
+f <- cbind(AOD2Group,AOD1Group,AODInv1Group,
+           AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
+           STREN, Employ_Admin, Employ_Discharge, RiskLevel)~RaceGrouped + EthGrouped
 
-summary(FinalMerge$AOD_DISRUPTION1)
+f1 <- cbind(AOD2Group,AOD1Group,AODInv1Group,
+           AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
+           STREN, Employ_Admin, Employ_Discharge, RiskLevel) ~1
+
+lca_subset <- na.omit(lca_subset)
+lca_subset[] <- lapply(lca_subset, factor)
+lca_subset[] <- lapply(lca_subset, function(x) factor(x, exclude = NULL))
+
+
+lCA1 <- poLCA(f1,lca_subset, nclass=1,nrep=15) 
+lCA2 <- poLCA(f,lca_subset, nclass=2,nrep=15, graphs = T)
+lCA3 <- poLCA(f,lca_subset, nclass=3,nrep=15, graphs = T)
+
+#names(lca_subset)
+
+
+# Calculate entropy (3-class mode)l- values closer to 1.0 indicate greater separation of the classes.
+entropy<-function (p) sum(-p*log(p))
+error_prior <- entropy(LCA3$P) # Class proportions
+error_post <- mean(apply(LCA3$posterior, 1, entropy))
+LCA3_entropy <- (error_prior - error_post) / error_prior
+LCA3_entropy
+
+#predicted class membership is in:
+LCA3$predclass[1:30]
+
+#add variable to data set with all variables so it can be used as predictor variable:
+lca_subset$class <- LCA3$predclass
+
+plot(lCA1)
+plot(lCA2)
+plot(lCA3)
+
+#AIC across latent models
+aic_values <- numeric()
+
+for (k in 1:6) {
+  model <- poLCA(f1, lca_subset, nclass = k, nrep = 10, verbose = FALSE)
+  aic_values[k] <- model$aic
+}
+
+plot(1:6, aic_values, type = "b",
+     xlab = "Number of Classes",
+     ylab = "AIC",
+     main = "AIC Across Latent Class Models")
+
