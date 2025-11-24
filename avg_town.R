@@ -244,6 +244,10 @@ lca_subset<-subset(FinalMerge, select=c(RaceGrouped, EthGrouped, AOD2Group,AOD1G
                                     STREN,Employ_Admin,Employ_Discharge, RiskLevel,
                                     ProgramName))
 
+lca_vars_only<-subset(FinalMerge, select=c(AOD2Group,AOD1Group,AODInv1Group,
+                                           AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
+                                           STREN))
+
 
 lca_subset <- na.omit(lca_subset[, c(
   "AOD2Group","AOD1Group","AODInv1Group","AODInv2Group",
@@ -254,6 +258,11 @@ lca_subset <- na.omit(lca_subset[, c(
 )])
 
 
+lca_vars_only <- na.omit(lca_subset[, c(
+  "AOD2Group","AOD1Group","AODInv1Group","AODInv2Group",
+  "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
+  "MOOD","DEF","MOTIVATION","STREN"
+)])
 
 library(plyr)
 
@@ -281,20 +290,28 @@ library(poLCA)
 
 f <- cbind(AOD2Group,AOD1Group,AODInv1Group,
            AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
-           STREN, Employ_Admin, Employ_Discharge, RiskLevel)~RaceGrouped + EthGrouped
+           STREN)~RaceGrouped + EthGrouped + Employ_Admin + Employ_Discharge + RiskLevel
 
 f1 <- cbind(AOD2Group,AOD1Group,AODInv1Group,
            AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
-           STREN, Employ_Admin, Employ_Discharge, RiskLevel) ~1
+           STREN) ~1
 
 lca_subset <- na.omit(lca_subset)
 lca_subset[] <- lapply(lca_subset, factor)
 lca_subset[] <- lapply(lca_subset, function(x) factor(x, exclude = NULL))
 
+lca_vars_only <- na.omit(lca_vars_only)
+lca_vars_only[] <- lapply(lca_vars_only, factor)
+lca_vars_only[] <- lapply(lca_vars_only, function(x) factor(x, exclude = NULL))
+
 
 lCA1 <- poLCA(f1,lca_subset, nclass=1,nrep=15) 
 lCA2 <- poLCA(f,lca_subset, nclass=2,nrep=15, graphs = T)
 lCA3 <- poLCA(f,lca_subset, nclass=3,nrep=15, graphs = T)
+
+lCAv1 <- poLCA(f1,lca_vars_only, nclass=1,nrep=15) 
+lCAv2 <- poLCA(f1,lca_vars_only, nclass=2,nrep=15, graphs = T)
+lCAv3 <- poLCA(f1,lca_vars_only, nclass=3,nrep=15, graphs = T)
 
 #names(lca_subset)
 
@@ -315,6 +332,10 @@ lca_subset$class <- LCA3$predclass
 plot(lCA1)
 plot(lCA2)
 plot(lCA3)
+
+plot(lCAv1)
+plot(lCAv2)
+plot(lCAv3)
 
 #AIC across latent models
 aic_values <- numeric()
