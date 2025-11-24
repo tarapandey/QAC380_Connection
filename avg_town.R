@@ -258,7 +258,7 @@ lca_subset <- na.omit(lca_subset[, c(
 )])
 
 
-lca_vars_only <- na.omit(lca_subset[, c(
+lca_vars_only <- na.omit(lca_vars_only[, c(
   "AOD2Group","AOD1Group","AODInv1Group","AODInv2Group",
   "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
   "MOOD","DEF","MOTIVATION","STREN"
@@ -312,6 +312,9 @@ lCA3 <- poLCA(f,lca_subset, nclass=3,nrep=15, graphs = T)
 lCAv1 <- poLCA(f1,lca_vars_only, nclass=1,nrep=15) 
 lCAv2 <- poLCA(f1,lca_vars_only, nclass=2,nrep=15, graphs = T)
 lCAv3 <- poLCA(f1,lca_vars_only, nclass=3,nrep=15, graphs = T)
+lCAv4 <- poLCA(f1,lca_vars_only, nclass=4,nrep=15, graphs = T)
+lCAv5 <- poLCA(f1,lca_vars_only, nclass=5,nrep=15, graphs = T)
+lCAv6 <- poLCA(f1,lca_vars_only, nclass=6,nrep=15, graphs = T)
 
 #names(lca_subset)
 
@@ -336,12 +339,14 @@ plot(lCA3)
 plot(lCAv1)
 plot(lCAv2)
 plot(lCAv3)
+plot(lCAv4)
+plot(lCAv5)
 
 #AIC across latent models
 aic_values <- numeric()
 
 for (k in 1:6) {
-  model <- poLCA(f1, lca_subset, nclass = k, nrep = 10, verbose = FALSE)
+  model <- poLCA(f1, lca_vars_only, nclass = k, nrep = 10, verbose = FALSE)
   aic_values[k] <- model$aic
 }
 
@@ -349,4 +354,17 @@ plot(1:6, aic_values, type = "b",
      xlab = "Number of Classes",
      ylab = "AIC",
      main = "AIC Across Latent Class Models")
+
+# Calculate entropy (3-class mode)l- values closer to 1.0 indicate greater separation of the classes.
+lCAv3$P
+
+entropy <- function(p) {
+  p <- p[p > 0]      # remove zeros
+  sum(-p * log(p))
+}
+error_prior <- entropy(lCAv3$P) # Class proportions
+error_post <- mean(apply(lCAv3$posterior, 1, entropy))
+lCAv3_entropy <- (error_prior - error_post) / error_prior
+lCAv3_entropy
+
 
