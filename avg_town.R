@@ -246,7 +246,7 @@ lca_subset<-subset(FinalMerge, select=c(RaceGrouped, EthGrouped, AOD2Group,AOD1G
 
 lca_vars_only<-subset(FinalMerge, select=c(AOD2Group,AOD1Group,AODInv1Group,
                                            AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
-                                           STREN))
+                                           STREN, StudyClientId))
 
 
 lca_subset <- na.omit(lca_subset[, c(
@@ -254,14 +254,13 @@ lca_subset <- na.omit(lca_subset[, c(
   "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
   "MOOD","DEF","MOTIVATION","STREN",
   "RaceGrouped","EthGrouped", "Employ_Admin", 
-  "Employ_Discharge", "RiskLevel", "ProgramName"
-)])
+  "Employ_Discharge", "RiskLevel", "ProgramName")])
 
 
 lca_vars_only <- na.omit(lca_vars_only[, c(
   "AOD2Group","AOD1Group","AODInv1Group","AODInv2Group",
   "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
-  "MOOD","DEF","MOTIVATION","STREN"
+  "MOOD","DEF","MOTIVATION","STREN", "StudyClientId"
 )])
 
 library(plyr)
@@ -301,6 +300,7 @@ lca_subset[] <- lapply(lca_subset, factor)
 lca_subset[] <- lapply(lca_subset, function(x) factor(x, exclude = NULL))
 
 lca_vars_only <- na.omit(lca_vars_only)
+lca_vars_only <- lca_vars_only[!duplicated(lca_vars_only), ]
 lca_vars_only[] <- lapply(lca_vars_only, factor)
 lca_vars_only[] <- lapply(lca_vars_only, function(x) factor(x, exclude = NULL))
 
@@ -362,9 +362,119 @@ entropy <- function(p) {
   p <- p[p > 0]      # remove zeros
   sum(-p * log(p))
 }
-error_prior <- entropy(lCAv3$P) # Class proportions
-error_post <- mean(apply(lCAv3$posterior, 1, entropy))
-lCAv3_entropy <- (error_prior - error_post) / error_prior
-lCAv3_entropy
+error_prior <- entropy(lCAv4$P) # Class proportions
+error_post <- mean(apply(lCAv4$posterior, 1, entropy))
+lCAv4_entropy <- (error_prior - error_post) / error_prior
+lCAv4_entropy
+
+lca_vars_only$LCA_class <- lCAv4$predclass
+
+
+lca_vars_only$Class1_prob <- lCAv4$posterior[,1]
+lca_vars_only$Class2_prob <- lCAv4$posterior[,2]
+lca_vars_only$Class3_prob <- lCAv4$posterior[,3]
+lca_vars_only$Class4_prob <- lCAv4$posterior[,4]
+
+LCA_discharge <- merge(FinalMerge[, c("StudyClientId", "DischargeStatus")],
+                       lca_vars_only[, c("StudyClientId", "LCA_class", "Class1_prob", "Class2_prob", "Class3_prob", "Class4_prob")],
+                       by = "StudyClientId",
+                       all.x = TRUE)
+
+#lca outcomes correlation to discharge
+LCA_discharge <- na.omit(LCA_discharge)
+LCA_discharge <- LCA_discharge[!duplicated(LCA_discharge), ]
+
+#zuhay's data management code
+LCA_discharge$DischargeStatus <- recode(LCA_discharge$DischargeStatus,
+                                       "Absconded/AWOL" = "Unsuccessful",
+                                       "Arrested New" = "Unsuccessful",                          
+                                       "Completed Program/End of Sentence" = "Successful",
+                                       "Completed Program/Parole" = "Successful",
+                                       "Completed Program/Treatment" = "Successful",
+                                       "Completed Program/Treatment & Referred" = "Successful",
+                                       "Escaped" = "Unsuccessful",
+                                       "Incarcerated" = "Unsuccessful",
+                                       "New Arrest - Sexual Offense" = "Unsuccessful",
+                                       "Remanded" = "Unsuccessful",
+                                       "Discharged to Higher Level of Care" = "Other",
+                                       "Medical" = "Other",
+                                       "Moved out of area" = "Other",
+                                       "Transferred" = "Other",
+                                       
+                                       
+)
+LCA_discharge <- subset(LCA_discharge, DischargeStatus != "Deceased")
+LCA_discharge <- subset(LCA_discharge, DischargeStatus != "")
+
+LCA_discharge$DischargeStatus <- as.factor(LCA_discharge$DischargeStatus)
+LCA_discharge$DischargeStatus <- droplevels(LCA_discharge$DischargeStatus)
+
+discharge_prob_regress <- glm(DischargeStatus ~ Class1_prob + Class2_prob + Class3_prob + Class4_prob,
+    data = LCA_discharge)
+summary(discharge_prob_regress)
+
+summary(LCA_discharge)
+
+library(nnet)
+
+# contingency table
+discharge_tab <- table(LCA_discharge$LCA_class, LCA_discharge$DischargeStatus)
+discharge_tab
+
+prop.table(discharge_tab)
+# chi-square test
+chisq.test(discharge_tab)
+
+#employment outcome
+LCA_employment <- merge(FinalMerge[, c("StudyClientId", "Employ_Discharge")],
+                       lca_vars_only[, c("StudyClientId", "LCA_class", "Class1_prob", "Class2_prob", "Class3_prob", "Class4_prob")],
+                       by = "StudyClientId",
+                       all.x = TRUE)
+
+LCA_employment$Employ_Discharge <- recode(LCA_employment$Employ_Discharge, "Employed - P/T Skilled Position" = "Employed")
+
+#lca outcomes correlation to discharge
+LCA_employment <- na.omit(LCA_employment)
+LCA_employment <- LCA_employment[!duplicated(LCA_employment), ]
+LCA_employment <- subset(LCA_employment, Employ_Discharge != "")
+
+LCA_employment$Employ_Discharge <- as.factor(LCA_employment$Employ_Discharge)
+LCA_employment$Employ_Discharge <- droplevels(LCA_employment$Employ_Discharge)
+
+# contingency table
+employment_tab <- table(LCA_employment$LCA_class, LCA_employment$Employ_Discharge)
+employment_tab
+
+prop.table(employment_tab)
+# chi-square test
+fisher.test(employment_tab)
+
+#lengthofstay outcome
+LCA_stay <- merge(FinalMerge[, c("StudyClientId", "LengthOfStay")],
+                       lca_vars_only[, c("StudyClientId", "LCA_class", "Class1_prob", "Class2_prob", "Class3_prob", "Class4_prob")],
+                       by = "StudyClientId",
+                       all.x = TRUE)
+LCA_stay <- na.omit(LCA_stay)
+LCA_stay <- LCA_stay[!duplicated(LCA_stay), ]
+
+anova_result <- aov(LengthOfStay ~ LCA_class, data = LCA_stay)
+summary(anova_result)
+
+#ORAS risk level
+LCA_risk <- merge(FinalMerge[, c("StudyClientId", "RiskLevel")],
+                  lca_vars_only[, c("StudyClientId", "LCA_class", "Class1_prob", "Class2_prob", "Class3_prob", "Class4_prob")],
+                  by = "StudyClientId",
+                  all.x = TRUE)
+LCA_risk <- na.omit(LCA_risk)
+LCA_risk <- LCA_risk[!duplicated(LCA_risk), ]
+
+LCA_risk$RiskLevel <- as.factor(LCA_risk$RiskLevel)
+LCA_risk$RiskLevel <- droplevels(LCA_risk$RiskLevel)
+
+risk_tab <- table(LCA_risk$LCA_class, LCA_risk$RiskLevel)
+risk_tab
+
+fisher.test(risk_tab)
+
 
 
