@@ -142,100 +142,100 @@ FinalMerge$EmploymentStatusAtAdmission <- recode(FinalMerge$EmploymentStatusAtAd
 
 #LCA
 #AOD_INVOLVEMENT1
-FinalMerge$AODInv1Group <- cut(
-  FinalMerge$AOD_INVOLVEMENT1,
+ASUSDimensions$AOD_Inv1 <- cut(
+  ASUSDimensions$AOD_INVOLVEMENT1,
   breaks = c(0, 3, 6, 11, 40),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$AODInv1Group <- as.factor(FinalMerge$AODInv1Group)
+ASUSDimensions$AOD_Inv1 <- as.factor(ASUSDimensions$AOD_Inv1)
 
 #AOD_INVOLVEMENT2
-FinalMerge$AODInv2Group <- cut(
-  FinalMerge$AOD_INVOLVEMENT2,
+ASUSDimensions$AOD_Inv2 <- cut(
+  ASUSDimensions$AOD_INVOLVEMENT2,
   breaks = c(0, 7, 16, 25, 40),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$AODInv2Group <- as.factor(FinalMerge$AODInv2Group)
+ASUSDimensions$AOD_Inv2 <- as.factor(ASUSDimensions$AOD_Inv2)
 
 #AOD_DISRUPTION1
-FinalMerge$AOD1Group <- cut(
-  FinalMerge$AOD_DISRUPTION1,
+ASUSDimensions$AOD_Dis1 <- cut(
+  ASUSDimensions$AOD_DISRUPTION1,
   breaks = c(0, 1, 6, 21, 80),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$AOD1Group <- as.factor(FinalMerge$AOD1Group)
+ASUSDimensions$AOD_Dis1 <- as.factor(ASUSDimensions$AOD_Dis1)
 
 #AOD_DISRUPTION2
-FinalMerge$AOD2Group <- cut(
-  FinalMerge$AOD_DISRUPTION2,
+ASUSDimensions$AOD_Dis2 <- cut(
+  ASUSDimensions$AOD_DISRUPTION2,
   breaks = c(0, 21, 41, 57, 80),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$AOD2Group <- as.factor(FinalMerge$AOD2Group)
+ASUSDimensions$AOD_Dis2 <- as.factor(ASUSDimensions$AOD_Dis2)
 
 #AOD_USE_BENEFITS
-FinalMerge$AOD_BENEFITS <- cut(
-  FinalMerge$AOD_USE_BENEFITS,
+ASUSDimensions$AOD_BENEFITS <- cut(
+  ASUSDimensions$AOD_USE_BENEFITS,
   breaks = c(0, 1, 4, 10, 30),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$AOD_BENEFITS <- as.factor(FinalMerge$AOD_BENEFITS)
+ASUSDimensions$AOD_BENEFITS <- as.factor(ASUSDimensions$AOD_BENEFITS)
 
 #SOCIAL_NON_CONFORMING
-FinalMerge$SOC_NONCON <- cut(
-  FinalMerge$SOCIAL_NON_CONFORMING,
+ASUSDimensions$SOC_NONCON <- cut(
+  ASUSDimensions$SOCIAL_NON_CONFORMING,
   breaks = c(0, 5, 7, 12, 36),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$SOC_NONCON <- as.factor(FinalMerge$SOC_NONCON)
+ASUSDimensions$SOC_NONCON <- as.factor(ASUSDimensions$SOC_NONCON)
 
 #LEGAL_NON_CONFORMING
-FinalMerge$LEG_NONCON <- cut(
-  FinalMerge$LEGAL_NON_CONFORMING,
-  breaks = c(0, 5, 7, 12, 36),
+ASUSDimensions$LEG_NONCON <- cut(
+  ASUSDimensions$LEGAL_NON_CONFORMING,
+  breaks = c(0, 6, 10, 17, 42),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$LEG_NONCON <- as.factor(FinalMerge$LEG_NONCON)
+ASUSDimensions$LEG_NONCON <- as.factor(ASUSDimensions$LEG_NONCON)
 
 #LEGAL_NON_CONFORMING_6MOS
-FinalMerge$LEG_6MOS <- cut(
-  FinalMerge$LEGAL_NON_CONFORMING_6MOS,
+ASUSDimensions$LEG_6MOS <- cut(
+  ASUSDimensions$LEGAL_NON_CONFORMING_6MOS,
   breaks = c(-1, 0, 2, 5, 33),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$LEG_6MOS <- as.factor(FinalMerge$LEG_6MOS)
+ASUSDimensions$LEG_6MOS <- as.factor(ASUSDimensions$LEG_6MOS)
 
 #MOOD_ADJUSTMENT
-FinalMerge$MOOD <- cut(
-  FinalMerge$MOOD_ADJUSTMENT,
+ASUSDimensions$MOOD <- cut(
+  ASUSDimensions$MOOD_ADJUSTMENT,
   breaks = c(0, 2, 6, 9, 30),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$MOOD <- as.factor(FinalMerge$MOOD)
+ASUSDimensions$MOOD <- as.factor(ASUSDimensions$MOOD)
 
 #DEFENSIVE
-FinalMerge$DEF <- cut(
-  FinalMerge$DEFENSIVE,
+ASUSDimensions$DEF <- cut(
+  ASUSDimensions$DEFENSIVE,
   breaks = c(0, 5, 10, 13, 21),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$DEF <- as.factor(FinalMerge$DEF)
+ASUSDimensions$DEF <- as.factor(ASUSDimensions$DEF)
 
 #MOTIVATION_TO_CHANGE
-FinalMerge$MOTIVATION <- cut(
-  FinalMerge$MOTIVATION_TO_CHANGE,
+ASUSDimensions$MOTIVATION <- cut(
+  ASUSDimensions$MOTIVATION_TO_CHANGE,
   breaks = c(0, 5, 10, 15, 21),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$MOTIVATION <- as.factor(FinalMerge$MOTIVATION)
+ASUSDimensions$MOTIVATION <- as.factor(ASUSDimensions$MOTIVATION)
 
 #STRENGTHS
-FinalMerge$STREN <- cut(
-  FinalMerge$STRENGTHS,
+ASUSDimensions$STRENGTHS <- cut(
+  ASUSDimensions$STRENGTHS,
   breaks = c(0, 7, 17, 22, 27),
   labels = c(1, 2, 3, 4)
 )
-FinalMerge$STREN <- as.factor(FinalMerge$STREN)
+ASUSDimensions$STRENGTHS <- as.factor(ASUSDimensions$STRENGTHS)
 
 names(FinalMerge)[names(FinalMerge) %in% c("EmploymentStatusAtAdmission","EmploymentStatusCurrentToDischarge")] <- c("Employ_Admin","Employ_Discharge")
 
@@ -247,6 +247,11 @@ lca_subset<-subset(FinalMerge, select=c(RaceGrouped, EthGrouped, AOD2Group,AOD1G
 lca_vars_only<-subset(FinalMerge, select=c(AOD2Group,AOD1Group,AODInv1Group,
                                            AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
                                            STREN, StudyClientId))
+
+ASUS_vars<-subset(ASUSDimensions, select=c(AOD_DISRUPTION1,AOD_INVOLVEMENT1,AOD_DISRUPTION2,
+                                           AOD_INVOLVEMENT2,AOD_USE_BENEFITS,SOCIAL_NON_CONFORMING,LEGAL_NON_CONFORMING,
+                                          LEGAL_NON_CONFORMING_6MOS,MOOD_ADJUSTMENT,DEFENSIVE,MOTIVATION_TO_CHANGE,
+                                           STRENGTHS, StudyClientId))
 
 
 lca_subset <- na.omit(lca_subset[, c(
@@ -262,6 +267,12 @@ lca_vars_only <- na.omit(lca_vars_only[, c(
   "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
   "MOOD","DEF","MOTIVATION","STREN", "StudyClientId"
 )])
+
+
+ASUS_vars <- na.omit(ASUS_vars[, c("AOD_DISRUPTION1","AOD_INVOLVEMENT1","AOD_DISRUPTION2",
+                                           "AOD_INVOLVEMENT2","AOD_USE_BENEFITS","SOCIAL_NON_CONFORMING","LEGAL_NON_CONFORMING",
+                                           "LEGAL_NON_CONFORMING_6MOS","MOOD_ADJUSTMENT","DEFENSIVE","MOTIVATION_TO_CHANGE",
+                                           "STRENGTHS", "StudyClientId")])
 
 library(plyr)
 
@@ -295,6 +306,11 @@ f1 <- cbind(AOD2Group,AOD1Group,AODInv1Group,
            AODInv2Group,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,LEG_6MOS,MOOD,DEF,MOTIVATION,
            STREN) ~1
 
+ASUS_f <- cbind(AOD_DISRUPTION1,AOD_INVOLVEMENT1,AOD_DISRUPTION2,
+                  AOD_INVOLVEMENT2,AOD_USE_BENEFITS,SOCIAL_NON_CONFORMING,LEGAL_NON_CONFORMING,
+                  LEGAL_NON_CONFORMING_6MOS,MOOD_ADJUSTMENT,DEFENSIVE,MOTIVATION_TO_CHANGE,
+                  STRENGTHS, StudyClientId) ~ 1
+
 lca_subset <- na.omit(lca_subset)
 lca_subset[] <- lapply(lca_subset, factor)
 lca_subset[] <- lapply(lca_subset, function(x) factor(x, exclude = NULL))
@@ -309,7 +325,7 @@ lCA1 <- poLCA(f1,lca_subset, nclass=1,nrep=15)
 lCA2 <- poLCA(f,lca_subset, nclass=2,nrep=15, graphs = T)
 lCA3 <- poLCA(f,lca_subset, nclass=3,nrep=15, graphs = T)
 
-lCAv1 <- poLCA(f1,lca_vars_only, nclass=1,nrep=15) 
+lCAv1 <- poLCA(ASUS_f,ASUS_vars, nclass=1,nrep=15) 
 lCAv2 <- poLCA(f1,lca_vars_only, nclass=2,nrep=15, graphs = T)
 lCAv3 <- poLCA(f1,lca_vars_only, nclass=3,nrep=15, graphs = T)
 lCAv4 <- poLCA(f1,lca_vars_only, nclass=4,nrep=15, graphs = T)
@@ -343,7 +359,7 @@ plot(lCAv4)
 plot(lCAv5)
 
 #AIC across latent models
-aic_values <- numeric()
+
 
 for (k in 1:6) {
   model <- poLCA(f1, lca_vars_only, nclass = k, nrep = 10, verbose = FALSE)
@@ -384,7 +400,7 @@ LCA_discharge <- merge(FinalMerge[, c("StudyClientId", "DischargeStatus")],
 LCA_discharge <- na.omit(LCA_discharge)
 LCA_discharge <- LCA_discharge[!duplicated(LCA_discharge), ]
 
-#zuhay's data management code
+#zuhayr's data management code
 LCA_discharge$DischargeStatus <- recode(LCA_discharge$DischargeStatus,
                                        "Absconded/AWOL" = "Unsuccessful",
                                        "Arrested New" = "Unsuccessful",                          
@@ -406,7 +422,7 @@ LCA_discharge$DischargeStatus <- recode(LCA_discharge$DischargeStatus,
 LCA_discharge <- subset(LCA_discharge, DischargeStatus != "Deceased")
 LCA_discharge <- subset(LCA_discharge, DischargeStatus != "")
 
-LCA_discharge$DischargeStatus <- as.factor(LCA_discharge$DischargeStatus)
+LCA_discharge$DischargeStatus <- social(LCA_discharge$DischargeStatus)
 LCA_discharge$DischargeStatus <- droplevels(LCA_discharge$DischargeStatus)
 
 discharge_prob_regress <- glm(DischargeStatus ~ Class1_prob + Class2_prob + Class3_prob + Class4_prob,
@@ -438,7 +454,7 @@ LCA_employment <- na.omit(LCA_employment)
 LCA_employment <- LCA_employment[!duplicated(LCA_employment), ]
 LCA_employment <- subset(LCA_employment, Employ_Discharge != "")
 
-LCA_employment$Employ_Discharge <- as.factor(LCA_employment$Employ_Discharge)
+LCA_employment$Employ_Discharge <- social(LCA_employment$Employ_Discharge)
 LCA_employment$Employ_Discharge <- droplevels(LCA_employment$Employ_Discharge)
 
 # contingency table
@@ -468,13 +484,11 @@ LCA_risk <- merge(FinalMerge[, c("StudyClientId", "RiskLevel")],
 LCA_risk <- na.omit(LCA_risk)
 LCA_risk <- LCA_risk[!duplicated(LCA_risk), ]
 
-LCA_risk$RiskLevel <- as.factor(LCA_risk$RiskLevel)
+LCA_risk$RiskLevel <- social(LCA_risk$RiskLevel)
 LCA_risk$RiskLevel <- droplevels(LCA_risk$RiskLevel)
 
 risk_tab <- table(LCA_risk$LCA_class, LCA_risk$RiskLevel)
 risk_tab
 
 fisher.test(risk_tab)
-
-
 
