@@ -232,16 +232,21 @@ prop.table(discharge_tab)
 chisq.test(discharge_tab)
 
 #plot
-ggplot(discharge_chi, aes(x = as.factor(LCA_class), fill = DischargeStatus)) +
-  geom_bar(position = "dodge") +
-  scale_fill_manual(values = c("darkolivegreen4", "lightgray")) +
+percent_success <- discharge_chi %>%
+  group_by(LCA_class) %>%
+  summarize(
+    pct_success = mean(DischargeStatus == "Successful") * 100
+  )
+
+ggplot(percent_success, aes(x = as.factor(LCA_class), y = pct_success)) +
+  geom_col(fill = "darkolivegreen4") +
   labs(
     x = "Latent Class",
-    y = "Count",
-    fill = "Discharge Status",
-    title = "Counts of Discharge Status by Latent Class"
+    y = "Percent Successful",
+    title = "Percent of Successful Discharges by Latent Class"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  ylim(0, 100)
 
 
 
