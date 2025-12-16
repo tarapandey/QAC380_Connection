@@ -5,6 +5,8 @@ library(descr)
 library(dplyr)
 library(readr)
 
+setwd("/Users/tarapandey/QAC_380_Connection_Data")
+
 ASUSDimensions = read.csv("ASUS_dimension_scores.csv")
 EpisodeData = read.csv("EpisodeData.csv")
 EmploymentData = read.csv("EmploymentData.csv") 
@@ -109,11 +111,11 @@ ASUSDimensions$STRENGTHS <- as.factor(ASUSDimensions$STRENGTHS)
 ASUS_vars<-subset(ASUSDimensions, select=c(AOD_Dis1,AOD_Inv1,AOD_Dis2,
                                            AOD_Inv2,AOD_BENEFITS,SOC_NONCON,LEG_NONCON,
                                            LEG_6MOS,MOOD,DEFENSIVE,MOTIVATION,
-                                           STRENGTHS, StudyClientID))
+                                           STRENGTHS, StudyClientID, StudyEpisodeID))
 
 ASUS_vars <- na.omit(ASUS_vars[, c("AOD_Dis1","AOD_Inv1","AOD_Dis2","AOD_Inv2",
   "AOD_BENEFITS","SOC_NONCON","LEG_NONCON","LEG_6MOS",
-  "MOOD","DEFENSIVE","MOTIVATION","STRENGTHS", "StudyClientID"
+  "MOOD","DEFENSIVE","MOTIVATION","STRENGTHS", "StudyClientID", "StudyEpisodeID"
 )])
 
 ASUS_vars <- na.omit(ASUS_vars)
@@ -130,6 +132,7 @@ lCAv3 <- poLCA(ASUS_f,ASUS_vars, nclass=3,nrep=15, graphs = T)
 lCAv4 <- poLCA(ASUS_f,ASUS_vars, nclass=4,nrep=15, graphs = T)
 lCAv5 <- poLCA(ASUS_f,ASUS_vars, nclass=5,nrep=15, graphs = T)
 lCAv6 <- poLCA(ASUS_f,ASUS_vars, nclass=6,nrep=15, graphs = T)
+
 
 #BIC testing for optimal model
 lCAv1$bic
@@ -191,7 +194,14 @@ names(ASUS_vars)[names(ASUS_vars)== "StudyClientID"] <- "StudyClientId"
 #episode data subset keeping most recent discharge
 ASUS_vars$StudyClientId <- as.integer(as.character(ASUS_vars$StudyClientId))
 
-episode_subset <- EpisodeData[, c("StudyClientId", "DischargeStatus", "AdmissionYear")]
+episode_subset <- EpisodeData[, c("StudyClientId", "StudyEpisodeId", "DischargeStatus", "AdmissionYear", "ProgramName")]
+names(ASUS_vars)[names(ASUS_vars)== "StudyEpisodeID"] <- "StudyEpisodeId"
+
+ASUS_vars <- ASUS_vars %>%
+  mutate(
+    StudyEpisodeId = as.integer(as.character(StudyEpisodeId))
+  )
+
 episode_subset <- episode_subset %>%
   left_join(ASUS_vars, by = "StudyClientId")
 
@@ -240,7 +250,7 @@ percent_success <- discharge_chi %>%
 
 ggplot(percent_success, aes(x = as.factor(LCA_class), y = pct_success)) +
   geom_col(fill = "darkolivegreen4") +
-  labs(
+  labs(,,                                                                                                                         
     x = "Latent Class",
     y = "Percent Successful",
     title = "Percent of Successful Discharges by Latent Class"
@@ -248,5 +258,5 @@ ggplot(percent_success, aes(x = as.factor(LCA_class), y = pct_success)) +
   theme_minimal() +
   ylim(0, 100)
 
-
-
+#Classify LCA by proportions of programs
+table(discharge_chi$ProgramName)
