@@ -24,7 +24,7 @@ ASUSDimensions = read.csv("ASUS_dimension_scores.csv")
 OutsideData = read.csv("2022_Disproportionately_Impacted_Areas copy.csv")
 
 #DISCHARGE STATUS 
-EpisodeData$DischargeStatus[EpisodeData$DischargeStatus == "Deceased" ] <- NA
+EpisodeData$ DischargeStatus[EpisodeData$DischargeStatus == "Deceased" ] <- NA
 EpisodeData$DischargeStatus[EpisodeData$DischargeStatus == "" ] <- NA
 EpisodeData <- EpisodeData[!is.na(EpisodeData$DischargeStatus), ]
 
@@ -62,6 +62,20 @@ EmploymentData$EmploymentStatusAtAdmission <- recode(EmploymentData$EmploymentSt
 
 EmploymentData <- EmploymentData[!is.na(EmploymentData$EmploymentStatusAtAdmission), ]
 
+#EMPLOYMENT @ DISCHARGE 
+EmploymentData$EmploymentStatusCurrentToDischarge <- recode(EmploymentData$EmploymentStatusCurrentToDischarge,
+                                                            "Employed - F/T Competitive  (35 hrs or more)" = "Employed",
+                                                            "Employed - P/T Competitive (35 hrs or less)" = "Employed",
+                                                            "Employed - P/T Skilled Position" = "Employed",
+                                                            "NILF Temporarily unable to work due to Medical/Mental Health Issues" = "NILF",
+                                                            "NILF Temporarily unable to work due to lack of identification" = "NILF",
+                                                            "NILF Pending Disability" = "NILF",
+                                                            "NILF SSI/SSDI/SAGA" = "NILF",
+                                                            "Enrolled in School w/Work Study" = "Employed",
+                                                            "(N/A) Temporarily unable to work due to lack of identification" = "NILF",
+                                                            "Employed - F/T Semi-Skilled Position" = "Employed",
+                                                            "Employed - P/T Semi-Skilled Position" = "Employed",
+)
 # RACE
 
 ClientData$Race[ClientData$Race == "Not on file" ] <- NA
@@ -114,37 +128,205 @@ Employment_of_Interest = EmploymentData[, c("StudyClientId", "StudyEpisodeId", "
 Employment_of_Interest <- Employment_of_Interest[!duplicated(Employment_of_Interest), ]
 
 #Merge the data into one 
-MergedData1 = merge(ClientData, ClientAddress, by = "StudyClientId", all = TRUE)
-MergedData2 = merge(MergedData1, EpisodeData, by = "StudyClientId", all = TRUE)
-MergedData3 = merge(MergedData2, ASUSDimensions, by = "StudyClientId", all = TRUE)
-MergedData4 = merge(MergedData3, Employment_of_Interest, by = "StudyClientId", all = TRUE)
+MergedData1 = merge(ClientData, ClientAddress, by = "StudyClientId", all = FALSE)
+MergedData2 = merge(MergedData1, EpisodeData, by = "StudyClientId", all = FALSE)
+MergedData3 = merge(MergedData2, ASUSDimensions, by = "StudyClientId", all = FALSE)
+MergedData4 = merge(MergedData3, Employment_of_Interest, by = "StudyClientId", all = FALSE)
+MergedData5 = merge(MergedData4, ORAS_CST, by = "StudyClientId", all = TRUE)
+
+MergedData5 <- MergedData5 %>% 
+  distinct()
 
 FinalMerge = left_join(MergedData4, avg_town, by = c("City" = "Town.s."))
-
-
 
 glimpse(FinalMerge)
 
 #stats for Discharge Status x Employment @ Admission
-table(MergedData4$DischargeStatus, MergedData4$EmploymentStatusAtAdmission)
+#subset the data
 
-ggplot(MergedData4, aes(x = DischargeStatus, fill = EmploymentStatusAtAdmission)) +
-  geom_bar(position = "stack")
+EmploymentDischarge <- MergedData4[, c("DischargeStatus", "EmploymentStatusAtAdmission")]
 
-ggplot(MergedData4, aes(x = DischargeStatus, fill = EmploymentStatusAtAdmission)) +
+EmploymentDischarge$EmploymentStatusAtAdmission[EmploymentDischarge$EmploymentStatusAtAdmission == ""] <- NA
+EmploymentDischarge$DischargeStatus[EmploymentDischarge$DischargeStatus == ""] <- NA
+
+EmploymentDischarge <- EmploymentDischarge[!is.na(EmploymentDischarge$DischargeStatus), ]
+EmploymentDischarge <- EmploymentDischarge[!is.na(EmploymentDischarge$EmploymentStatusAtAdmission), ]
+
+table(EmploymentDischarge$DischargeStatus, EmploymentDischarge$EmploymentStatusAtAdmission)
+
+ggplot(EmploymentDischarge, aes(x = EmploymentStatusAtAdmission, fill = DischargeStatus )) +
   geom_bar(position = "dodge")
+#CHANGED EMPLOY ADMIN x DISCHARGE STATUS
+plot_data <- EmploymentDischarge %>%
+  filter(!is.na(DischargeStatus), DischargeStatus != "",
+         !is.na(EmploymentStatusAtAdmission), EmploymentStatusAtAdmission != "") %>%
+  group_by(EmploymentStatusAtAdmission) %>%
+  count(DischargeStatus) %>%
+  mutate(percentage = n / sum(n)) %>%
+  filter(DischargeStatus == "Successful") 
 
-#stats for Discharge Status x Race 
-table(MergedData4$DischargeStatus, MergedData4$RaceGrouped)
+ggplot(plot_data, aes(x = EmploymentStatusAtAdmission, y = percentage)) +
+  geom_col(fill = "skyblue") + 
+  scale_y_continuous(labels = scales::percent, limits = c(0,1)) +
+  labs(x = "EmploymentStatusAtAdmission",
+       y = "%  Successful Discharge ", 
+       title = "Does Employment Status At Admission Affect Discharge Success?")
 
-ggplot(MergedData4, aes(x = DischargeStatus, fill = RaceGrouped)) +
-  geom_bar(position = "stack") 
+employment_discharge_table <- table(EmploymentDischarge$EmploymentStatusAtAdmission, 
+                                    EmploymentDischarge$DischargeStatus)
 
-ggplot(MergedData4, aes(x = DischargeStatus, fill = RaceGrouped)) +
-  geom_bar(position = "dodge")
+print(employment_discharge_table)
+
+chisq.test(employment_discharge_table)
+
+
+
+# 1. Create the table
+emp_discharge_table <- table(Employment2Discharge$EmploymentStatusCurrentToDischarge, 
+                             Employment2Discharge$DischargeStatus)
+
+# 2. Print the table to see raw counts
+print("Contingency Table:")
+print(emp_discharge_table)
+
+# 3. Run the Chi-Square Test
+test_result <- chisq.test(emp_discharge_table)
+print(test_result)
+
+# 4. Check Residuals to see the direction of the effect
+# (Positive values > 2 mean that group appears MORE often than expected)
+print("Standardized Residuals:")
+print(test_result$residuals)
+
+
+
+
+#stats for Discharge Status x Race
+RaceDischarge <- MergedData4[, c("DischargeStatus", "RaceGrouped")]
+
+RaceDischarge$Race[RaceDischarge$Race == ""] <- NA
+RaceDischarge$DischargeStatus[RaceDischarge$DischargeStatus == ""] <- NA
+
+RaceDischarge <- RaceDischarge[!is.na(RaceDischarge$DischargeStatus), ]
+RaceDischarge <- RaceDischarge[!is.na(RaceDischarge$Race), ]
+
+table(RaceDischarge$DischargeStatus, RaceDischarge$RaceGrouped)
+
+ggplot(RaceDischarge, aes(x = RaceGrouped, fill = DischargeStatus )) +
+  geom_bar(position = "dodge") 
+#CHANGED RACE x DISCHARGE STATUS
+plot_data <- RaceDischarge %>%
+  filter(!is.na(DischargeStatus), DischargeStatus != "",
+         !is.na(Race), Race != "") %>%
+  group_by(Race) %>%
+  count(DischargeStatus) %>%
+  mutate(percentage = n / sum(n)) %>%
+  filter(DischargeStatus == "Successful") 
+
+ggplot(plot_data, aes(x = Race, y = percentage)) +
+  geom_col(fill = "red") + 
+  scale_y_continuous(labels = scales::percent, limits = c(0,1)) +
+  labs(x = "Race",
+       y = "%  Successful Discharge ", 
+       title = "Does Race Affect Discharge Success?")
+
+
+# 1. Create a Binary "IsSuccessful" variable
+# (This groups "Unsuccessful" and "Other" together as 0, and "Successful" as 1)
+RaceDischarge$IsSuccessful <- ifelse(RaceDischarge$DischargeStatus == "Successful", "Yes", "No")
+
+# 2. Create the contingency table (Race vs. Success)
+# Note: Ensure you use the correct column name. Your code used 'RaceGrouped' initially.
+race_table_binary <- table(RaceDischarge$RaceGrouped, RaceDischarge$IsSuccessful)
+
+# 3. Run the Chi-Square Test
+test_result <- chisq.test(race_table_binary)
+
+# 4. Print the result
+print(test_result)
+
+# 5. Check the Residuals (CRITICAL STEP)
+# This tells you WHICH race is driving the difference (if any)
+print(test_result$residuals)
+
+
+
+
 
 #stats for Discharge Status x Length of Stay
+StayDischarge <- MergedData4[, c("DischargeStatus", "LengthOfStay")]
 
-ggplot(MergedData4, aes(x=DischargeStatus, y=LengthOfStay)) +
+StayDischarge <- StayDischarge[!is.na(StayDischarge$DischargeStatus), ]
+StayDischarge <- StayDischarge[!is.na(StayDischarge$LengthOfStay), ]
+
+ggplot(StayDischarge, aes(x=DischargeStatus, y=LengthOfStay)) +
   geom_boxplot()
+
+
+#stats for Discharge Status x Employment at Discharge 
+
+Employment2Discharge = MergedData4[, c("DischargeStatus", "EmploymentStatusCurrentToDischarge")]
+Employment2Discharge <- Employment2Discharge[!is.na(Employment2Discharge$DischargeStatus), ]
+Employment2Discharge <- Employment2Discharge[!is.na(Employment2Discharge$EmploymentStatusCurrentToDischarge), ]
+
+ggplot(Employment2Discharge, aes(x = DischargeStatus, fill = EmploymentStatusCurrentToDischarge)) +
+  geom_bar(position = "dodge") 
+
+table(EmploymentData$EmploymentStatusCurrentToDischarge)
+
+#CHANGED DISCHARGE STATUS x EMPLOYMENT DISCHARGE 
+
+
+
+#ORAS LEVEL x DISCHARGE STATUS 
+
+MergedData5$RiskLevel[MergedData5$RiskLevel == "Overridden" ] <- NA
+RiskDischarge = MergedData5[, c("DischargeStatus", "RiskLevel")]
+RiskDischarge <- RiskDischarge[!is.na(RiskDischarge$DischargeStatus), ]
+RiskDischarge <- RiskDischarge[!is.na(RiskDischarge$RiskLevel), ]
+
+ggplot(RiskDischarge, aes(x = RiskLevel , fill = DischargeStatus)) +
+  geom_bar(position = "dodge")
+#CHANGED ORAS DISCHARGE
+
+RiskDischarge$RiskLevel <- factor(RiskDischarge$RiskLevel, levels = c( "Low", "Moderate", "High", "Very High"))
+
+plot_data <- RiskDischarge %>%
+  filter(!is.na(DischargeStatus), DischargeStatus != "",
+         !is.na(RiskLevel), RiskLevel != "") %>%
+  group_by(RiskLevel) %>%
+  count(DischargeStatus) %>%
+  mutate(percentage = n / sum(n)) %>%
+  filter(DischargeStatus == "Successful") 
+
+ggplot(plot_data, aes(x = RiskLevel, y = percentage)) +
+  geom_col(fill = "cornflowerblue") + 
+  scale_y_continuous(labels = scales::percent, limits = c(0,1)) +
+  labs(x = "Risk Level",
+       y = "%  Successful Discharge ", 
+       title = "Does Risk Level Affect Discharge Success?")
+
+risk_discharge_table <- table(RiskDischarge$RiskLevel, RiskDischarge$DischargeStatus)
+
+print("Contingency Table:")
+print(risk_discharge_table)
+
+test_result <- chisq.test(risk_discharge_table)
+
+print(test_result)
+
+chisq_result <- chisq.test(risk_discharge_table)
+
+# 2. Print the residuals
+round(chisq_result$residuals, 2)
+
+RiskDischarge %>%
+  filter(!is.na(RiskLevel)) %>%  # Keep only rows where RiskLevel is NOT NA
+  ggplot(aes(x = RiskLevel)) +
+  geom_bar(fill = "blue")
+
+freq(MergedData4$Race)
+
+
+
 
