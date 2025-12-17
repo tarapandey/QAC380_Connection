@@ -328,5 +328,49 @@ RiskDischarge %>%
 freq(MergedData4$Race)
 
 
+freq(MergedData4$STRENGTHS)
+freq(MergedData4$DischargeStatus)
+
+#Bivariate ____ (LCA VARIABLES) and Successful Discharge Status
+
+MergedData4 %>% 
+  filter(STRENGTHS == 1) %>%       
+  count(DischargeStatus) %>%              
+  mutate(Percentage = n / sum(n) * 100) %>% 
+  filter(DischargeStatus == "Successful")
+
+#Bivariate ____ (LCA VARIABLES) and UNSuccessful Discharge Status
+
+MergedData4 %>% 
+  filter(STRENGTHS == 1) %>%       
+  count(DischargeStatus) %>%              
+  mutate(Percentage = n / sum(n) * 100) %>% 
+  filter(DischargeStatus == "Unsuccessful")
+
+#X2 TEST
+
+test_data <- MergedData4 %>%
+  filter(DischargeStatus %in% c("Successful", "Unsuccessful"))
+my_table <- table(test_data$STRENGTHS, test_data$DischargeStatus)
+test_result <- chisq.test(my_table)
+print(test_result)
 
 
+
+counts <- table(MergedData4$RaceGrouped, MergedData4$DischargeStatus)
+
+# 2. Convert counts to row percentages (1 means row-wise)
+percentages <- prop.table(counts, 1) * 100
+
+# 3. Combine them visually (Optional, for a cleaner view)
+# This shows the raw count and the percentage side-by-side
+print("Counts:")
+print(counts)
+
+print("Percentages:")
+print(round(percentages, 2))
+
+
+contingency_table <- table(MergedData4$RaceGrouped, MergedData4$DischargeStatus)
+chi_test_result <- chisq.test(contingency_table)
+print(chi_test_result)
