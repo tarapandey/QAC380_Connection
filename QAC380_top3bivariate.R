@@ -374,3 +374,7 @@ print(round(percentages, 2))
 contingency_table <- table(MergedData4$RaceGrouped, MergedData4$DischargeStatus)
 chi_test_result <- chisq.test(contingency_table)
 print(chi_test_result)
+
+summary(MergedData4$(AOD_INVOLVEMENT1)
+
+freq(MergedData4$AOD_INVOLVEMENT1)
